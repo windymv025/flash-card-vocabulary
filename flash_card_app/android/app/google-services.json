@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "112998555644",
+    "firebase_url": "https://flashcardvocabulary-default-rtdb.firebaseio.com",
+    "project_id": "flashcardvocabulary",
+    "storage_bucket": "flashcardvocabulary.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:112998555644:android:b9518c2e3d71ab96831c79",
+        "android_client_info": {
+          "package_name": "dev.windymv.flashcard_vocabulary"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "112998555644-2iirmk292u25qj4ahike4rsetdlq3iuj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfqyDuQQlbzLvkTTv4gcTDT0UGtKzJQLc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "112998555644-2iirmk292u25qj4ahike4rsetdlq3iuj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
