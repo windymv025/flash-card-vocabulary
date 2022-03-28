@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flash_card_app/screen/learning/components/speech_widget.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../../../constants/enums.dart';
 import '../../../models/vocabulary.dart';
@@ -21,6 +26,16 @@ class _LearningPageBodyState extends State<LearningPageBody> {
   int currentVocabulary = 0;
   final _vocabularies = <Vocabulary>[];
   bool _isLoading = true;
+
+  String? engine;
+  String? language;
+
+  bool get isIOS => !kIsWeb && Platform.isIOS;
+  bool get isAndroid => !kIsWeb && Platform.isAndroid;
+  bool get isWeb => kIsWeb;
+  bool isCurrentLanguageInstalled = false;
+
+  var flutterTts = FlutterTts();
 
   @override
   void initState() {
@@ -50,6 +65,11 @@ class _LearningPageBodyState extends State<LearningPageBody> {
         _isLoading = false;
       });
     });
+    _setAwaitOptions();
+  }
+
+  Future _setAwaitOptions() async {
+    await flutterTts.awaitSpeakCompletion(true);
   }
 
   @override
@@ -93,6 +113,7 @@ class _LearningPageBodyState extends State<LearningPageBody> {
                     ),
                   ],
                 ),
+                
                 const Expanded(child: Center(child: Text("No data"))),
               ],
             )),
@@ -116,6 +137,8 @@ class _LearningPageBodyState extends State<LearningPageBody> {
                   ),
                 ),
                 const Spacer(),
+                _selectLanguageSpeech(),
+                _engineSection(),
                 Card(
                   color: Colors.blue,
                   child: Padding(
@@ -243,6 +266,9 @@ class _LearningPageBodyState extends State<LearningPageBody> {
                 style: const TextStyle(fontSize: 20),
               ),
             ),
+          SpeechWidget(
+              text: _vocabularies[currentVocabulary - 1].word ?? "",
+              language: language),
         ],
       )),
     );
@@ -330,6 +356,93 @@ class _LearningPageBodyState extends State<LearningPageBody> {
         .forgotVocabulary(_vocabularies[currentVocabulary - 1].id!);
     setState(() {
       _vocabularies[currentVocabulary - 1].isRemembered = false;
+    });
+  }
+
+  Widget _engineSection() {
+    if (isAndroid) {
+      return FutureBuilder<dynamic>(
+          future: flutterTts.getEngines,
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.hasData) {
+              return _enginesDropDownSection(snapshot.data);
+            } else if (snapshot.hasError) {
+              return const Text('Error loading engines...');
+            } else {
+              return const Text('Loading engines...');
+            }
+          });
+    } else {
+      return const SizedBox(width: 0, height: 0);
+    }
+  }
+
+  Widget _enginesDropDownSection(dynamic engines) => Container(
+        padding: const EdgeInsets.only(top: 50.0),
+        child: DropdownButton(
+          value: engine,
+          items: getEnginesDropDownMenuItems(engines),
+          onChanged: changedEnginesDropDownItem,
+        ),
+      );
+  List<DropdownMenuItem<String>> getEnginesDropDownMenuItems(dynamic engines) {
+    var items = <DropdownMenuItem<String>>[];
+    for (dynamic type in engines) {
+      items.add(DropdownMenuItem(
+          value: type as String?, child: Text(type as String)));
+    }
+    return items;
+  }
+
+  void changedEnginesDropDownItem(String? selectedEngine) {
+    setState(() {
+      engine = selectedEngine;
+    });
+  }
+
+  Widget _selectLanguageSpeech() {
+    return FutureBuilder<dynamic>(
+        future: flutterTts.getLanguages,
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+          if (snapshot.hasData) {
+            return _languageDropDownSection(snapshot.data);
+          } else if (snapshot.hasError) {
+            return const Text('Error loading languages...');
+          } else {
+            return const Text('Loading Languages...');
+          }
+        });
+  }
+
+  Widget _languageDropDownSection(dynamic languages) => Expanded(
+        child: Container(
+            padding: const EdgeInsets.only(top: 10.0),
+            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              DropdownButton(
+                value: language,
+                items: getLanguageDropDownMenuItems(languages),
+                onChanged: changedLanguageDropDownItem,
+              ),
+              Visibility(
+                visible: isAndroid,
+                child: Text("Is installed: $isCurrentLanguageInstalled"),
+              ),
+            ])),
+      );
+
+  List<DropdownMenuItem<String>> getLanguageDropDownMenuItems(
+      dynamic languages) {
+    var items = <DropdownMenuItem<String>>[];
+    for (dynamic type in languages) {
+      items.add(DropdownMenuItem(
+          value: type.toString(), child: Text(type.toString())));
+    }
+    return items;
+  }
+
+  void changedLanguageDropDownItem(String? selectedType) {
+    setState(() {
+      language = selectedType;
     });
   }
 }
