@@ -8,6 +8,7 @@ import 'package:flash_card_app/screen/learning/learning_forgotten_screen.dart';
 import 'package:flash_card_app/screen/sign_in/sign_in_screen.dart';
 import 'package:flash_card_app/screen/sign_up/sign_up_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'constants/firebase_config.dart';
 
@@ -15,7 +16,10 @@ main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(options: firebaseOptions);
+  await Hive.initFlutter();
+  await Hive.openBox("user_box");
   runApp(const MyApp());
+  
 }
 
 class MyApp extends StatelessWidget {

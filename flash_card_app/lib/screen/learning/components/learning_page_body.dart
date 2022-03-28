@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flash_card_app/screen/learning/components/speech_widget.dart';
+import 'package:flash_card_app/service/hive_service.dart';
 import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/foundation.dart';
@@ -33,7 +34,6 @@ class _LearningPageBodyState extends State<LearningPageBody> {
   bool get isIOS => !kIsWeb && Platform.isIOS;
   bool get isAndroid => !kIsWeb && Platform.isAndroid;
   bool get isWeb => kIsWeb;
-  bool isCurrentLanguageInstalled = false;
 
   var flutterTts = FlutterTts();
 
@@ -66,6 +66,8 @@ class _LearningPageBodyState extends State<LearningPageBody> {
       });
     });
     _setAwaitOptions();
+    engine = HiveService.instance.readEngineSpeech();
+    language = HiveService.instance.readLanguageSpeech();
   }
 
   Future _setAwaitOptions() async {
@@ -113,7 +115,6 @@ class _LearningPageBodyState extends State<LearningPageBody> {
                     ),
                   ],
                 ),
-                
                 const Expanded(child: Center(child: Text("No data"))),
               ],
             )),
@@ -138,7 +139,6 @@ class _LearningPageBodyState extends State<LearningPageBody> {
                 ),
                 const Spacer(),
                 _selectLanguageSpeech(),
-                _engineSection(),
                 Card(
                   color: Colors.blue,
                   child: Padding(
@@ -236,6 +236,12 @@ class _LearningPageBodyState extends State<LearningPageBody> {
                 ),
               ),
             ),
+            Row(
+              children: [
+                const Spacer(),
+                _engineSection(),
+              ],
+            ),
           ],
         ),
       ),
@@ -268,6 +274,7 @@ class _LearningPageBodyState extends State<LearningPageBody> {
             ),
           SpeechWidget(
               text: _vocabularies[currentVocabulary - 1].word ?? "",
+              engine: engine,
               language: language),
         ],
       )),
@@ -291,8 +298,10 @@ class _LearningPageBodyState extends State<LearningPageBody> {
             children: [
               Text(
                 definition,
-                style:
-                    const TextStyle(fontSize: 35, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green),
                 textAlign: TextAlign.center,
               ),
               Text(
@@ -377,13 +386,10 @@ class _LearningPageBodyState extends State<LearningPageBody> {
     }
   }
 
-  Widget _enginesDropDownSection(dynamic engines) => Container(
-        padding: const EdgeInsets.only(top: 50.0),
-        child: DropdownButton(
-          value: engine,
-          items: getEnginesDropDownMenuItems(engines),
-          onChanged: changedEnginesDropDownItem,
-        ),
+  Widget _enginesDropDownSection(dynamic engines) => DropdownButton(
+        value: engine,
+        items: getEnginesDropDownMenuItems(engines),
+        onChanged: changedEnginesDropDownItem,
       );
   List<DropdownMenuItem<String>> getEnginesDropDownMenuItems(dynamic engines) {
     var items = <DropdownMenuItem<String>>[];
@@ -397,6 +403,9 @@ class _LearningPageBodyState extends State<LearningPageBody> {
   void changedEnginesDropDownItem(String? selectedEngine) {
     setState(() {
       engine = selectedEngine;
+      if (engine != null) {
+        HiveService.instance.saveEngineSpeech(engine!);
+      }
     });
   }
 
@@ -414,21 +423,15 @@ class _LearningPageBodyState extends State<LearningPageBody> {
         });
   }
 
-  Widget _languageDropDownSection(dynamic languages) => Expanded(
-        child: Container(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              DropdownButton(
-                value: language,
-                items: getLanguageDropDownMenuItems(languages),
-                onChanged: changedLanguageDropDownItem,
-              ),
-              Visibility(
-                visible: isAndroid,
-                child: Text("Is installed: $isCurrentLanguageInstalled"),
-              ),
-            ])),
-      );
+  Widget _languageDropDownSection(dynamic languages) => Container(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        DropdownButton(
+          value: language,
+          items: getLanguageDropDownMenuItems(languages),
+          onChanged: changedLanguageDropDownItem,
+        ),
+      ]));
 
   List<DropdownMenuItem<String>> getLanguageDropDownMenuItems(
       dynamic languages) {
@@ -443,6 +446,9 @@ class _LearningPageBodyState extends State<LearningPageBody> {
   void changedLanguageDropDownItem(String? selectedType) {
     setState(() {
       language = selectedType;
+      if (language != null) {
+        HiveService.instance.saveLanguageSpeech(language!);
+      }
     });
   }
 }

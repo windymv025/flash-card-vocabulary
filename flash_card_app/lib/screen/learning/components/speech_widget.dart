@@ -19,9 +19,8 @@ class SpeechWidget extends StatefulWidget {
 class _SpeechWidgetState extends State<SpeechWidget> {
   late FlutterTts flutterTts;
 
-  String? engine;
   double volume = 1;
-  double pitch = 1.0;
+  double pitch = 1;
   double rate = 0.5;
   bool isCurrentLanguageInstalled = false;
 
@@ -36,7 +35,6 @@ class _SpeechWidgetState extends State<SpeechWidget> {
   @override
   initState() {
     super.initState();
-    engine = widget.engine;
     initTts();
   }
 
@@ -83,6 +81,10 @@ class _SpeechWidgetState extends State<SpeechWidget> {
             .isLanguageInstalled(widget.language!)
             .then((value) => isCurrentLanguageInstalled = (value as bool));
       }
+    }
+
+    if (widget.engine != null) {
+      flutterTts.setEngine(widget.engine!);
     }
     return InkWell(
       onTap: () => isStopped ? _speak() : _stop(),
