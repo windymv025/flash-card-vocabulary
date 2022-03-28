@@ -397,6 +397,7 @@ class _LearningPageBodyState extends State<LearningPageBody> {
       items.add(DropdownMenuItem(
           value: type as String?, child: Text(type as String)));
     }
+    items.sort((a, b) => a.value!.compareTo(b.value!));
     return items;
   }
 
@@ -440,6 +441,7 @@ class _LearningPageBodyState extends State<LearningPageBody> {
       items.add(DropdownMenuItem(
           value: type.toString(), child: Text(type.toString())));
     }
+    items.sort((a, b) => a.value!.compareTo(b.value!));
     return items;
   }
 
