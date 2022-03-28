@@ -18,9 +18,11 @@ class LearningAllScren extends StatelessWidget {
             return const SignInScreen();
           }
         return const Scaffold(
-            body: LearningPageBody(
-          type: TypeLearning.all,
-        ));
+            body: SafeArea(
+              child: LearningPageBody(
+                      type: TypeLearning.all,
+                    ),
+            ));
       }
     );
   }

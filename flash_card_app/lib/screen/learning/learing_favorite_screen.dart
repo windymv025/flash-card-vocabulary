@@ -23,7 +23,7 @@ class _LearningFavoriteScreenState extends State<LearningFavoriteScreen> {
             return const SignInScreen();
           }
         return const Scaffold(
-          body: LearningPageBody(type: TypeLearning.favorite),
+          body: SafeArea(child: LearningPageBody(type: TypeLearning.favorite)),
         );
       }
     );

@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
             return const SignInScreen();
           }
           return const Scaffold(
-            body: HomeBody(),
+            body: SafeArea(child: HomeBody()),
           );
         });
   }

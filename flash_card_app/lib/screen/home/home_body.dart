@@ -48,8 +48,8 @@ class HomeBody extends StatelessWidget {
                             ),
                           );
                         }
-                        Map<String, dynamic> data =
-                            event.data!.snapshot.value as Map<String, dynamic>;
+                        var data =
+                            event.data!.snapshot.value as Map<Object?, Object?>;
                         return Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

@@ -18,8 +18,10 @@ class LearningForgottenScreen extends StatelessWidget {
             return const SignInScreen();
           }
           return const Scaffold(
-            body: LearningPageBody(
-              type: TypeLearning.forgotten,
+            body: SafeArea(
+              child: LearningPageBody(
+                type: TypeLearning.forgotten,
+              ),
             ),
           );
         });

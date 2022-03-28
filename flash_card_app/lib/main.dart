@@ -7,18 +7,14 @@ import 'package:flash_card_app/screen/learning/learning_all_screen.dart';
 import 'package:flash_card_app/screen/learning/learning_forgotten_screen.dart';
 import 'package:flash_card_app/screen/sign_in/sign_in_screen.dart';
 import 'package:flash_card_app/screen/sign_up/sign_up_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'constants/firebase_config.dart';
 
 main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb) {
-    await Firebase.initializeApp();
-  } else {
+
   await Firebase.initializeApp(options: firebaseOptions);
-  }
   runApp(const MyApp());
 }
 
