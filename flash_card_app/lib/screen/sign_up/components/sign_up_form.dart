@@ -66,16 +66,7 @@ class _SignUpFormState extends State<SignUpForm> {
                 )
               : DefaultButton(
                   text: "Sign Up",
-                  press: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      // if all are valid then go to success screen
-                      setState(() {
-                        isLoading = true;
-                      });
-                      _signUpAccount();
-                    }
-                  },
+                  press: _signUp,
                 ),
         ],
       ),
@@ -85,6 +76,9 @@ class _SignUpFormState extends State<SignUpForm> {
   TextFormField buildEmailFormField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
+      autofocus: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      textInputAction: TextInputAction.next,
       onSaved: (newValue) => email = newValue,
       onChanged: (value) {
         email = value;
@@ -102,6 +96,8 @@ class _SignUpFormState extends State<SignUpForm> {
   TextFormField buildPasswordFormField() {
     return TextFormField(
       obscureText: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      textInputAction: TextInputAction.done,
       onSaved: (newValue) => password = newValue,
       onChanged: (value) {
         password = value;
@@ -110,6 +106,7 @@ class _SignUpFormState extends State<SignUpForm> {
       validator: (value) {
         return value == null ? "" : checkPassword(value);
       },
+      onFieldSubmitted: (value) => _signUp(),
       decoration: const InputDecoration(
         label: Text("Password"),
       ),
@@ -147,5 +144,16 @@ class _SignUpFormState extends State<SignUpForm> {
     }).catchError((error) {
       print(error);
     });
+  }
+
+  _signUp() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      // if all are valid then go to success screen
+      setState(() {
+        isLoading = true;
+      });
+      _signUpAccount();
+    }
   }
 }

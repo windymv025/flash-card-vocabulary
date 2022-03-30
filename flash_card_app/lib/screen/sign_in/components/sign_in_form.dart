@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import '../../../constants/constants.dart';
@@ -64,15 +63,7 @@ class _SignInFormState extends State<SignInForm> {
                 )
               : DefaultButton(
                   text: "Sign In",
-                  press: () {
-                    if (_formKey.currentState!.validate()) {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      _formKey.currentState!.save();
-                      _singAccount();
-                    }
-                  },
+                  press: _signIn,
                 ),
         ],
       ),
@@ -82,6 +73,9 @@ class _SignInFormState extends State<SignInForm> {
   TextFormField buildEmailFormField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
+      autofocus: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      textInputAction: TextInputAction.next,
       initialValue: email,
       onSaved: (newValue) => email = newValue,
       onChanged: (value) {
@@ -100,6 +94,9 @@ class _SignInFormState extends State<SignInForm> {
     return TextFormField(
       initialValue: password,
       obscureText: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      keyboardType: TextInputType.visiblePassword,
+      textInputAction: TextInputAction.done,
       onSaved: (newValue) => password = newValue,
       onChanged: (value) {
         checkPassword(value);
@@ -107,6 +104,7 @@ class _SignInFormState extends State<SignInForm> {
       validator: (value) {
         return value == null ? null : checkPassword(value);
       },
+      onFieldSubmitted: (value) => _signIn(),
       decoration: const InputDecoration(
         label: Text("Password"),
       ),
@@ -147,5 +145,15 @@ class _SignInFormState extends State<SignInForm> {
       });
       print(error);
     });
+  }
+
+  _signIn() {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+      _formKey.currentState!.save();
+      _singAccount();
+    }
   }
 }

@@ -31,14 +31,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
           ),
           DefaultButton(
             text: "Submit",
-            press: () {
-              if (_formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
-                // if all are valid then go to success screen
-                FirebaseAuth.instance.sendPasswordResetEmail(email: email!);
-                Navigator.pushReplacementNamed(context, SignInScreen.routeName);
-              }
-            },
+            press: _submit,
           ),
         ],
       ),
@@ -48,6 +41,9 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
   TextFormField buildEmailFormField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
+      autofocus: true,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      textInputAction: TextInputAction.done,
       onSaved: (newValue) => email = newValue,
       onChanged: (value) {},
       validator: (value) {
@@ -56,9 +52,19 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
         }
         return null;
       },
+      onFieldSubmitted: (value) => _submit(),
       decoration: const InputDecoration(
         label: Text("Email"),
       ),
     );
+  }
+
+  _submit() {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      // if all are valid then go to success screen
+      FirebaseAuth.instance.sendPasswordResetEmail(email: email!);
+      Navigator.pushReplacementNamed(context, SignInScreen.routeName);
+    }
   }
 }

@@ -91,7 +91,7 @@ class _SpeechWidgetState extends State<SpeechWidget> {
       child: Icon(
         isStopped ? Icons.volume_up : Icons.volume_off,
         color: Colors.blue,
-        size: 30,
+        size: 45,
       ),
     );
   }

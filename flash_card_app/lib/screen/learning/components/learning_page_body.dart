@@ -120,129 +120,142 @@ class _LearningPageBodyState extends State<LearningPageBody> {
             )),
       );
     }
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.only(top: 10),
-        constraints: const BoxConstraints(maxWidth: 400),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Card(
-                  child: InkWell(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Icon(Icons.home_rounded,
-                        size: 30, color: Colors.red),
-                  ),
-                ),
-                const Spacer(),
-                _selectLanguageSpeech(),
-                Card(
-                  color: Colors.blue,
-                  child: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: Text(
-                      "$currentVocabulary / $totalVocabularies",
-                      style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white),
+    return GestureDetector(
+      onHorizontalDragEnd: (details) {
+        if (details.primaryVelocity != null) {
+          if (details.primaryVelocity! > 8) {
+            // User swiped Left
+            _previousVocabulary();
+          } else if (details.primaryVelocity! < 8) {
+            // User swiped Right
+            _nextVocabulary();
+          }
+        }
+      },
+      child: Center(
+        child: Container(
+          padding: const EdgeInsets.only(top: 10),
+          constraints: const BoxConstraints(maxWidth: 400),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Card(
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Icon(Icons.home_rounded,
+                          size: 30, color: Colors.red),
                     ),
                   ),
-                ),
-              ],
-            ),
-            Container(
-              padding: const EdgeInsets.only(top: 10),
-              constraints: const BoxConstraints(maxHeight: 400),
-              child: Card(
-                child: FlipCard(
-                  controller: _flipCardController,
-                  direction: FlipDirection.HORIZONTAL,
-                  front: _buildFront(),
-                  back: _buildBack(),
+                  const Spacer(),
+                  _selectLanguageSpeech(),
+                  Card(
+                    color: Colors.blue,
+                    child: Padding(
+                      padding: const EdgeInsets.all(4),
+                      child: Text(
+                        "$currentVocabulary / $totalVocabularies",
+                        style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                            color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                padding: const EdgeInsets.only(top: 10),
+                constraints: const BoxConstraints(maxHeight: 400),
+                child: Card(
+                  child: FlipCard(
+                    controller: _flipCardController,
+                    direction: FlipDirection.HORIZONTAL,
+                    front: _buildFront(),
+                    back: _buildBack(),
+                  ),
                 ),
               ),
-            ),
-            Card(
-              color: Colors.white,
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 10, top: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    InkWell(
-                      child: const Icon(
-                        Icons.skip_previous_rounded,
-                        size: 35,
+              Card(
+                color: Colors.white,
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10, top: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      InkWell(
+                        child: const Icon(
+                          Icons.skip_previous_rounded,
+                          size: 35,
+                        ),
+                        onTap: () => _previousVocabulary(),
                       ),
-                      onTap: () => _previousVocabulary(),
-                    ),
-                    if (_vocabularies[currentVocabulary - 1].isRemembered ==
-                        false)
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            child: const Icon(
-                              Icons.check_circle_outline_rounded,
-                              color: Colors.red,
-                              size: 50,
+                      if (_vocabularies[currentVocabulary - 1].isRemembered ==
+                          false)
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              child: const Icon(
+                                Icons.check_circle_outline_rounded,
+                                color: Colors.red,
+                                size: 50,
+                              ),
+                              onTap: () => _forgotVocabulary(),
                             ),
-                            onTap: () => _forgotVocabulary(),
-                          ),
-                          const Text("Forgot",
+                            const Text("Forgot",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.red)),
+                          ],
+                        ),
+                      if (_vocabularies[currentVocabulary - 1].isRemembered ==
+                          true)
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            InkWell(
+                              child: const Icon(
+                                Icons.check_circle_rounded,
+                                color: Colors.green,
+                                size: 50,
+                              ),
+                              onTap: () => _rememberVocabulary(),
+                            ),
+                            const Text(
+                              "Remember",
                               style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w700,
-                                  color: Colors.red)),
-                        ],
-                      ),
-                    if (_vocabularies[currentVocabulary - 1].isRemembered ==
-                        true)
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            child: const Icon(
-                              Icons.check_circle_rounded,
-                              color: Colors.green,
-                              size: 50,
+                                  color: Colors.green),
+                              textAlign: TextAlign.center,
                             ),
-                            onTap: () => _rememberVocabulary(),
-                          ),
-                          const Text(
-                            "Remember",
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
-                                color: Colors.green),
-                            textAlign: TextAlign.center,
-                          ),
-                        ],
+                          ],
+                        ),
+                      InkWell(
+                        child: const Icon(
+                          Icons.skip_next_rounded,
+                          size: 35,
+                        ),
+                        onTap: () => _nextVocabulary(),
                       ),
-                    InkWell(
-                      child: const Icon(
-                        Icons.skip_next_rounded,
-                        size: 35,
-                      ),
-                      onTap: () => _nextVocabulary(),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Row(
-              children: [
-                const Spacer(),
-                _engineSection(),
-              ],
-            ),
-          ],
+              Row(
+                children: [
+                  const Spacer(),
+                  _engineSection(),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

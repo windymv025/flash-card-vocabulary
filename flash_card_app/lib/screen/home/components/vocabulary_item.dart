@@ -3,6 +3,7 @@ import 'package:flash_card_app/screen/home/dialog/edit_vocabulary_widget.dart';
 import 'package:flash_card_app/service/firebase_service.dart';
 import 'package:flash_card_app/utils/function_helper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 
 class VocabularyItem extends StatefulWidget {
   const VocabularyItem({Key? key, required this.vocabulary}) : super(key: key);
@@ -21,75 +22,72 @@ class _VocabularyItemState extends State<VocabularyItem> {
     }
     var definition =
         types + "${upcaseFistCharactor(widget.vocabulary.definition ?? "")}";
-    return Card(
-      child: ListTile(
-        title: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              upcaseFistCharactor(widget.vocabulary.word ?? ""),
-              style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue),
+    return Slidable(
+      endActionPane: ActionPane(
+        motion: const DrawerMotion(),
+        extentRatio: 1 / 3,
+        children: [
+          SlidableAction(
+            // An action can be bigger than the others.
+            onPressed: (context) => _editVocabulary(),
+            backgroundColor: const Color(0xFF0392CF),
+            foregroundColor: Colors.white,
+            icon: Icons.edit,
+            label: 'Edit',
+          ),
+          SlidableAction(
+            onPressed: (context) => _deleteVocabulary(),
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+            label: 'Delete',
+          ),
+        ],
+      ),
+      child: Card(
+        child: ListTile(
+          title: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                upcaseFistCharactor(widget.vocabulary.word ?? ""),
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue),
+                overflow: TextOverflow.clip,
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                widget.vocabulary.isRemembered == true
+                    ? Icons.check_circle
+                    : Icons.check_circle_outline,
+                color: const Color.fromARGB(255, 20, 197, 4),
+                size: 15,
+              ),
+            ],
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Text(
+              definition,
+              style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 15),
               overflow: TextOverflow.clip,
             ),
-            const SizedBox(width: 8),
-            Icon(
-              widget.vocabulary.isRemembered == true
-                  ? Icons.check_circle
-                  : Icons.check_circle_outline,
-              color: const Color.fromARGB(255, 20, 197, 4),
-              size: 15,
-            ),
-          ],
-        ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Text(
-            definition,
-            style: const TextStyle(fontStyle: FontStyle.italic, fontSize: 15),
-            overflow: TextOverflow.clip,
           ),
-        ),
-        trailing: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                InkWell(
-                  child: const Icon(
-                    Icons.edit,
-                    color: Colors.blue,
-                    size: 17,
-                  ),
-                  onTap: _editVocabulary,
-                ),
-                InkWell(
-                  child: const Icon(
-                    Icons.delete,
-                    color: Colors.red,
-                    size: 17,
-                  ),
-                  onTap: _deleteVocabulary,
-                ),
-              ],
+          trailing: InkWell(
+            child: Icon(
+              widget.vocabulary.isFavorite == true
+                  ? Icons.favorite
+                  : Icons.favorite_border,
+              color: Colors.red,
+              size: 31,
             ),
-            InkWell(
-              child: Icon(
-                widget.vocabulary.isFavorite == true
-                    ? Icons.favorite
-                    : Icons.favorite_border,
-                color: Colors.red,
-                size: 31,
-              ),
-              onTap: () {
-                FirebaseService().updateFavorite(widget.vocabulary.id,
-                    widget.vocabulary.isFavorite ?? false);
-              },
-            ),
-          ],
+            onTap: () {
+              FirebaseService().updateFavorite(widget.vocabulary.id,
+                  widget.vocabulary.isFavorite ?? false);
+            },
+          ),
         ),
       ),
     );
