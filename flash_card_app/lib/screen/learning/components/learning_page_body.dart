@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flash_card_app/screen/learning/components/speech_widget.dart';
 import 'package:flash_card_app/service/hive_service.dart';
 import 'package:flip_card/flip_card.dart';
@@ -40,9 +41,11 @@ class _LearningPageBodyState extends State<LearningPageBody> {
   @override
   void initState() {
     super.initState();
+    var uid = FirebaseAuth.instance.currentUser?.uid;
     var ref = FirebaseFirestore.instance
         .collection("vocabularies")
-        .where("isDeleted", isEqualTo: false);
+        .where("isDeleted", isEqualTo: false)
+        .where("uid", isEqualTo: uid);
     if (widget.type == TypeLearning.forgotten) {
       ref = ref.where("isRemembered", isEqualTo: false);
     } else if (widget.type == TypeLearning.favorite) {
