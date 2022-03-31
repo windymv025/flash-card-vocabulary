@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flash_card_app/screen/sign_in/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 
 import '../../../constants/constants.dart';
 import '../../forgot_password/forgot_password_screen.dart';
+import '../../home/home_screen.dart';
 import '../../widget/default_button.dart';
 
 class SignUpForm extends StatefulWidget {
@@ -140,7 +142,7 @@ class _SignUpFormState extends State<SignUpForm> {
           "numberOfRemember": 0,
         });
       }
-      Navigator.pop(context);
+      Navigator.pushReplacementNamed(context, SignInScreen.routeName);
     }).catchError((error) {
       print(error);
     });
